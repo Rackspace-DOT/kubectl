@@ -8,14 +8,34 @@ if [ ! -d "$HOME/.kube" ]; then
     mkdir -p $HOME/.kube
 fi
 
+
+config=$(echo "$KUBE_CONFIG" | base64 -d)
+echo "KUBE_CONFIG: ${config}"
+echo "KUBE_CONTEXT: ${KUBE_CONTEXT}"
+echo "KUBE_CERTIFICATE: ${KUBE_CERTIFICATE}"
+echo "KUBE_HOST: ${KUBE_HOST}"
+
+# version=$(kubectl version)
+# echo "kubectl version: ${version}"
+
+echo "Using config file: ${HOME}/.kube/config"
+
+config=$(cat ${HOME}/.kube/config)
+echo "Using the following config: ${config}"
+
+echo "Checking for existing config file ..."
 if [ ! -f "$HOME/.kube/config" ]; then
+    echo "Existing config not found."
     if [ ! -z "${KUBE_CONFIG}" ]; then
+        echo "Writing provided config to ${HOME}/.kube/config"
         echo "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
 
         if [ ! -z "${KUBE_CONTEXT}" ]; then
+            echo "Switching context to ${KUBE_CONTEXT}."
             kubectl config use-context $KUBE_CONTEXT
         fi
     elif [ ! -z "${KUBE_HOST}" ]; then
+        echo "Config file not provided, building our own ..."
         echo "$KUBE_CERTIFICATE" | base64 -d > $HOME/.kube/certificate
         kubectl config set-cluster default --server=https://$KUBE_HOST --certificate-authority=$HOME/.kube/certificate > /dev/null
 
@@ -37,6 +57,10 @@ if [ ! -f "$HOME/.kube/config" ]; then
     fi
 fi
 
+config=$(cat ${HOME}/.kube/config)
+echo "Using the following config: ${config}"
+
+echo "Running kubectl ..."
 if [ -z "$dest" ]; then
     kubectl $*
 else
