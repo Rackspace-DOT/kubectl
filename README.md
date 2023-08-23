@@ -9,32 +9,9 @@ To use kubectl put this step into your workflow:
 
 ### Authorization with config file
 ```yaml
-- uses: actions-hub/kubectl@master
+- uses: andrrax/kubectl@only_kubeconfig
   env:
-    KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-  with:
-    args: get pods
-```
-
-### Authorization with credentials
-```yaml
-- uses: actions-hub/kubectl@master
-  env:
-    KUBE_HOST: ${{ secrets.KUBE_HOST }}
-    KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
-    KUBE_USERNAME: ${{ secrets.KUBE_USERNAME }}
-    KUBE_PASSWORD: ${{ secrets.KUBE_PASSWORD }}
-  with:
-    args: get pods
-```
-
-### Authorization with a bearer token
-```yaml
-- uses: actions-hub/kubectl@master
-  env:
-    KUBE_HOST: ${{ secrets.KUBE_HOST }}
-    KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
-    KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+    KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
   with:
     args: get pods
 ```
@@ -46,7 +23,7 @@ I recommend using secrets for this.
 ### KUBECONFIG file
 First options its to use [kubeconfig file](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/).  
 
-For this method `KUBE_CONFIG` required.  
+For this method `KUBECONFIG` required.  
 You can find it: `cat $HOME/.kube/config | base64 `.
 
 Optionally you can switch the [context](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/) (the cluster) if you have few in kubeconfig file. Passing specific context to `KUBE_CONTEXT`. To see the list of available contexts do: `kubectl config get-contexts`.
@@ -56,21 +33,6 @@ Optionally you can switch the [context](https://kubernetes.io/docs/tasks/access-
 | KUBE_CONFIG | string (base64) |
 | KUBE_CONTEXT | string |
 
-### KUBECONFIG file
-Another way to authenticate in the cluster is [HTTP basic auth](https://kubernetes.io/docs/reference/access-authn-authz/authentication/).
-  
-For this you need to pass:
-- host (IP only, without protocol)
-- username
-- password
-- cluster CA certificate
-
-| Variable | Type |
-| --- | --- |
-| KUBE_HOST | string |
-| KUBE_USERNAME | string |
-| KUBE_PASSWORD | string |
-| KUBE_CERTIFICATE | string |
 
 ## Example
 ```yaml
@@ -84,9 +46,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - uses: actions-hub/kubectl@master
+      - uses: andrrax/kubectl@only_kubeconfig
         env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
         with:
           args: get pods
 ```
@@ -102,11 +64,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - uses: actions-hub/kubectl@master
+      - uses: andrrax/kubectl@only_kubeconfig
         env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
 
-      - uses: actions-hub/kubectl@master
+      - uses: andrrax/kubectl@only_kubeconfig
         with:
           args: get pods
 ```
@@ -119,7 +81,7 @@ To use a specific version of kubectl use:
 ```yaml
 - uses: actions-hub/kubectl@1.14.3
   env:
-    KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+    KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
   with:
     args: get pods
 ```
